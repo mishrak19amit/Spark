@@ -1,0 +1,17 @@
+We begin this book with an introduction to Apache Spark and its rich API .
+Understanding the information in part 1 is important for writing high-quality
+Spark programs and is an excellent foundation for the rest of the book.
+Chapter 1 roughly describes Spark’s main features and compares them with
+Hadoop’s MapReduce and other tools from the Hadoop ecosystem. It also
+includes a description of the spark-in-action virtual machine we’ve prepared for
+you, which you can use to run the examples in the book.
+Chapter 2 further explores the VM , teaches you how to use Spark’s command-
+line interface (spark-shell), and uses several examples to explain resilient distributed
+datasets ( RDD s)—the central abstraction in Spark.
+In chapter 3, you’ll learn how to set up Eclipse to write standalone Spark
+applications. Then you’ll write such an application to analyze GitHub logs and
+execute the application by submitting it to a Spark cluster.
+Chapter 4 explores the Spark core API in more detail. Specifically, it shows
+you how to work with key-value pairs and explains how data partitioning and
+shuffling work in Spark. It also teaches you how to group, sort, and join data, and
+how to use accumulators and broadcast variables.
