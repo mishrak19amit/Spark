@@ -15,3 +15,17 @@ Chapter 4 explores the Spark core API in more detail. Specifically, it shows
 you how to work with key-value pairs and explains how data partitioning and
 shuffling work in Spark. It also teaches you how to group, sort, and join data, and
 how to use accumulators and broadcast variables.
+
+6 Ignored Tips to keep in mind while attending Interviews:
+
+1. Look into the eyes of the Interviewer while answering any questions else it seems disrespectful
+
+2. Keep a smile through out the discussion - I call it a 'Yes Face' because no one likes dull face :)
+
+3. While sitting in a chair, try not to sit on the edge nor lean forward, instead try to sit comfortably
+
+4. Breath, you need to relax, so breath! I have noticed many candidates not breathing but trying to stay firm like a Robot :)
+
+5. Especially for Freshers, don't keep your bags in your lap, try to keep it next to your seat
+
+6. Once Interviewer asks you a question, don't hurry to answer, you can pause for few seconds, gather your thoughts and then answer clearly.
