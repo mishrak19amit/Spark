@@ -26,9 +26,9 @@ public class DataSetCassandra {
        
        cassdf.createOrReplaceTempView("QACass");
        
-       sqlcontext.sql("select * from QACass where moglix_part_number='MSN2QKHW6JHG3X'").show();
+       Dataset<Row>  savecassdf= sqlcontext.sql("select * from QACass");
         
-        
+       savecassdf.write().format("json").save("/home/moglix/Desktop/Amit/PGitHub/Spark/data/QA_Cass_Json");
         jsc.close();
 	}
 }
