@@ -20,15 +20,16 @@ public class DataSetCassandra {
         System.out.println(jsc.appName());
         
         SQLContext sqlcontext= new SQLContext(jsc);
-       Dataset<Row>  cassdf=sqlcontext.read().format("org.apache.spark.sql.cassandra").option("table", "product_data_raw").option("keyspace", "products").load();
+       Dataset<Row>  cassdf=sqlcontext.read().format("org.apache.spark.sql.cassandra").option("table", "attribute_details").option("keyspace", "products").load();
         
        cassdf.printSchema();
        
        cassdf.createOrReplaceTempView("QACass");
        
-       Dataset<Row>  savecassdf= sqlcontext.sql("select * from QACass");
-        
-       savecassdf.write().format("json").save("/home/moglix/Desktop/Amit/PGitHub/Spark/data/QA_Cass_Json");
+       //Dataset<Row>  savecassdf= sqlcontext.sql("select id_attribute, attribute_name from QACass where attribute_name IN ('quantity uom', 'UOM', 'uom', 'Items in Pack')");
+       Dataset<Row>  savecassdf= sqlcontext.sql("select attribute_name, count(*) from QACass group by attribute_name order by count(*) DESC");
+       savecassdf.show();
+       savecassdf.write().format("csv").save("/home/moglix/Desktop/Amit/Data_Spark/QA_Cass_AttributeByNameAndCount");
         jsc.close();
 	}
 }
