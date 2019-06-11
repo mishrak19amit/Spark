@@ -30,8 +30,8 @@ public class DataSetCassandra {
        //Dataset<Row>  savecassdf= sqlcontext.sql("select id_attribute, attribute_name from QACass where attribute_name IN ('quantity uom', 'UOM', 'uom', 'Items in Pack')");
        //Dataset<Row>  savecassdf= sqlcontext.sql("select attribute_name, count(*) from QACass group by attribute_name order by count(*) DESC");
        Dataset<Row>  savecassdf= sqlcontext.sql("select brand, count(*) from QACass group by brand order by count(*) DESC");
-       System.out.println(savecassdf.rdd().getNumPartitions());
-       //savecassdf.show();
+       //System.out.println(savecassdf.rdd().getNumPartitions());
+       savecassdf.show();
        //savecassdf.write().format("csv").save("/home/moglix/Desktop/Amit/Data_Spark/QA_Cass_AttributeByNameAndCount");
         jsc.close();
 	}

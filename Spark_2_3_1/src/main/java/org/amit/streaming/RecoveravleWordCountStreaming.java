@@ -5,9 +5,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
-import org.amit.Spark_2_3_1.WordCount;
 import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function0;
 import org.apache.spark.broadcast.Broadcast;
@@ -59,7 +57,7 @@ public class RecoveravleWordCountStreaming {
 	public static JavaStreamingContext createContext(String hostName, int port, String checkpointDirectory,
 			String outputPath) {
 		SparkConf conf = new SparkConf().setAppName("RecoverableWordCountStreaming").setMaster("local[3]");
-		JavaStreamingContext jsc = new JavaStreamingContext(conf, Durations.seconds(10));
+		JavaStreamingContext jsc = new JavaStreamingContext(conf, Durations.seconds(20));
 		System.out.println("Creating Spark Context...");
 		File outputFile = new File(outputPath);
 		if (outputFile.exists()) {
