@@ -6,6 +6,7 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.Optional;
 
 import scala.Tuple2;
 
@@ -15,38 +16,55 @@ public class JoiningSortingGrouping {
 		SparkConf conf = new SparkConf().setAppName("JoiningSortingGrouping_SIA_Chapter04").setMaster("local[1]");
 		JavaSparkContext sc = new JavaSparkContext(conf);
 		try {
-			JavaRDD<String> lines = sc
-					.textFile("/home/moglix/Desktop/Amit/Data_Spark/first-edition-master/ch04/ch04_data_transactions.txt");
+			JavaRDD<String> lines = sc.textFile(
+					"/home/moglix/Desktop/Amit/Data_Spark/first-edition-master/ch04/ch04_data_transactions.txt");
 			JavaPairRDD<Integer, String> pairrdd = lines.mapToPair(x -> {
 				int key = Integer.parseInt(x.split("#")[3]);
 				return new Tuple2<>(key, x);
 
 			});
-			
-			Map<Integer, Long> itemsold=pairrdd.countByKey();
-			
-			
-			JavaPairRDD<Integer, Integer> itemWithCountreverse =pairrdd.mapToPair(x->{
-				int quantity=Integer.parseInt(x._2().split("#")[4]);
+
+			JavaRDD<String> product = sc
+					.textFile("/home/moglix/Desktop/Amit/Data_Spark/first-edition-master/ch04/ch04_data_products.txt");
+			JavaPairRDD<Integer, String> pairproduct = product.mapToPair(x -> {
+				int key = Integer.parseInt(x.split("#")[0]);
+				return new Tuple2<>(key, x);
+
+			});
+
+			Map<Integer, Long> itemsold = pairrdd.countByKey();
+
+			JavaPairRDD<Integer, Integer> itemWithCountreverse = pairrdd.mapToPair(x -> {
+				int quantity = Integer.parseInt(x._2().split("#")[4]);
 				return new Tuple2<Integer, Integer>(x._1(), quantity);
-			}).mapToPair(x-> new Tuple2<Integer, Integer>(x._2(), x._1())).sortByKey(false);
-			
-			JavaPairRDD<Integer, Integer> itemWithCount=itemWithCountreverse.mapToPair(x-> new Tuple2<Integer, Integer>(x._2(),x._1()));
-			itemWithCount=itemWithCount.reduceByKey((a,b)->a+b);
-			itemWithCount.take(20).forEach(x->System.out.println(x));
+			}).mapToPair(x -> new Tuple2<Integer, Integer>(x._2(), x._1())).sortByKey(false);
+
+			JavaPairRDD<Integer, Integer> itemWithCount = itemWithCountreverse
+					.mapToPair(x -> new Tuple2<Integer, Integer>(x._2(), x._1()));
+			itemWithCount = itemWithCount.reduceByKey((a, b) -> a + b);
+			// itemWithCount.take(20).forEach(x->System.out.println(x));
 			System.out.println(itemWithCount.count());
-			int key=getMostTransaction(itemsold);
-			System.out.println(itemsold.get(key)+" user bought item with ItemID: "+key);
+
+			JavaPairRDD<Integer, Tuple2<Integer, String>> productjoined = itemWithCount.join(pairproduct);
+			productjoined.take(10).forEach(x -> System.out.println(x));
+
+			JavaPairRDD<Integer, Tuple2<String, Optional<Integer>>> unsolrproducts = pairproduct
+					.leftOuterJoin(itemWithCount).filter(x-> !x._2()._2().isPresent());
+
+			unsolrproducts.foreach(x -> System.out.println(x));
+			System.out.println(unsolrproducts.count());
+
 			
-		}catch(Exception e)
-		{
+			int key = getMostTransaction(itemsold);
+			System.out.println(itemsold.get(key) + " user bought item with ItemID: " + key);
+
+		} catch (Exception e) {
 			System.out.println(e);
-		}
-		finally {
+		} finally {
 			sc.close();
 		}
 	}
-	
+
 	public static int getMostTransaction(Map<Integer, Long> valuMap) {
 		int max = 0;
 		int valueKey = -1;
