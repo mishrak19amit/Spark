@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -26,7 +29,6 @@ public class StreamingTextFiles {
 		JavaDStream<String> lineDstream = sc
 				.textFileStream("/home/moglix/Desktop/Amit/Data_Spark/first-edition-master/ch06/SparkInput");
 
-		System.out.println(lineDstream.count());
 		sc.checkpoint("/home/moglix/Desktop/Amit/Data_Spark/checkPointDir");
 		JavaDStream<Order> ordersDstream = lineDstream.map(x -> {
 			Order order = new Order();
@@ -55,13 +57,42 @@ public class StreamingTextFiles {
 			return new Tuple2<String, Integer>(x.isBuy(), 1);
 		}).reduceByKey((a, b) -> a + b);
 
-		System.out.println(buyandSell.count());
-
 		buyandSell.foreachRDD(x -> {
 			x.foreach(xx -> {
-				System.out.println(xx._1() + " " + xx._2());
 				logger.info(xx._1() + "  B/S and it's count " + xx._2());
 			});
+		});
+
+		JavaPairDStream<String, Integer> stocksPerWindow = ordersDstream.mapToPair(x -> {
+
+			return new Tuple2<String, Integer>(x.getSymbol(), x.getAmount());
+		}).window(Durations.seconds(60)).reduceByKey((a, b) -> a + b);
+
+		JavaPairDStream<Integer, String> topStocks = stocksPerWindow.mapToPair(x -> {
+			return new Tuple2<Integer, String>(x._2(), x._1());
+		}).transformToPair(x -> x.sortByKey(false));
+
+		JavaDStream<List<String>> securities = topStocks.map(x -> x._2()).glom().map(xx -> {
+			List<String> evenIndexedNames = IntStream.range(0, xx.size()).filter(i -> i < 5).mapToObj(i -> xx.get(i))
+					.collect(Collectors.toList());
+
+			return evenIndexedNames;
+		});
+
+		JavaPairDStream<String, String> securitiespaired = topStocks.repartition(1).map(x -> x._2()).glom()
+				.mapToPair(xx -> {
+					List<String> evenIndexedNames = IntStream.range(0, xx.size()).filter(i -> i < 5)
+							.mapToObj(i -> xx.get(i)).collect(Collectors.toList());
+					String securitiesnames = "";
+					for (String ssc : evenIndexedNames) {
+						securitiesnames = securitiesnames + ssc + ",";
+					}
+
+					return new Tuple2<String, String>("Top Five Securities: ", securitiesnames);
+				});
+
+		securitiespaired.foreachRDD(x -> {
+			x.foreach(xx -> logger.info(xx._1() + " " + xx._2()));
 		});
 
 		JavaPairDStream<Integer, Double> amountPerClient = ordersDstream.mapToPair(x -> {
@@ -80,22 +111,37 @@ public class StreamingTextFiles {
 
 		JavaPairDStream<Double, Integer> swapppedamountState = amountState.mapToPair(x -> {
 			return new Tuple2<Double, Integer>(x._2(), x._1());
+		}).transformToPair(x -> x.sortByKey(false));
+
+
+		JavaPairDStream<String, String> top5Clients = swapppedamountState.repartition(1).glom().mapToPair(x -> {
+			List<Tuple2<Double, Integer>> evenIndexedNames = IntStream.range(0, x.size()).filter(i -> i < 5)
+					.mapToObj(i -> x.get(i)).collect(Collectors.toList());
+			String top5clientdetails = "";
+			for (Tuple2<Double, Integer> t : evenIndexedNames) {
+				top5clientdetails = top5clientdetails + t._2() + " expense: " + t._1() + ",";
+			}
+
+			return new Tuple2<String, String>("Top 5 clients", top5clientdetails);
+
 		});
-
-		// JavaPairDStream<Double,Integer> top5clients=
-		swapppedamountState.transformToPair(x -> x.sortByKey(false)).foreachRDD(x -> {
-			x.foreach(xx -> {
-				// System.out.println("Client ID : " + xx._2() + " total Expense " + xx._1());
-				logger.info("Client ID : " + xx._2() + " total Expense " + xx._1());
-
+		
+		top5Clients.foreachRDD(x->{
+			x.foreach(xx->{
+				System.out.println(xx._1()+" "+xx._2());
+				logger.info(xx._1()+" "+xx._2());
 			});
 		});
+		
 
-		System.out.println("Amit");
-
-		buyandSell.repartition(1).dstream().saveAsTextFiles(
+		JavaPairDStream<String, String> byandsellunion=buyandSell.mapToPair(x->{
+			return new Tuple2<String, String>(x._1(),x._2().toString());
+		});
+		
+		byandsellunion=byandsellunion.union(securitiespaired).union(top5Clients);
+		
+		byandsellunion.repartition(1).dstream().saveAsTextFiles(
 				"/home/moglix/Desktop/Amit/Data_Spark/first-edition-master/ch06/SparkOutPut/OutPut", "text");
-		System.out.println(ordersDstream.count());
 		sc.start();
 		try {
 			sc.awaitTermination();
