@@ -35,6 +35,40 @@ class JavaWordBlacklist {
 
 }
 
+class JavaBlackListDemo {
+
+	private static volatile Broadcast<List<String>> instance = null;
+
+	public Broadcast<List<String>> getBroadCast(JavaSparkContext sc) {
+		if (null == instance) {
+
+			synchronized (JavaBlackListDemo.class) {
+
+				return instance = sc.broadcast(Arrays.asList("a", "b", "c"));
+			}
+
+		} else {
+			return instance;
+		}
+	}
+}
+
+class JavaDroppedWordCounterDemo{
+	private static volatile LongAccumulator instance=null;
+	
+	public LongAccumulator getAccumulator(JavaSparkContext sc) {
+		if(null==instance) {
+			
+			synchronized (JavaDroppedWordCounterDemo.class) {
+				return instance=sc.sc().longAccumulator("WordBlackListCounter");
+			}
+		}
+		else {
+			return instance;
+		}
+	}
+}
+
 class JavaDroppedWordsCounter {
 	private static volatile LongAccumulator instance = null;
 
