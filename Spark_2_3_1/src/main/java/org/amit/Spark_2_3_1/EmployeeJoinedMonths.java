@@ -16,7 +16,7 @@ public class EmployeeJoinedMonths {
 		SparkSession sc = SparkSession.builder().appName("Getting Employee Joined Months").master("local")
 				.getOrCreate();
 
-		JavaRDD<Employee> employeesflatmap = sc.read().text("/home/moglix/upload/Employee.txt").javaRDD()
+		JavaRDD<Employee> employeesflatmap = sc.read().text("/home/moglix/Desktop/Amit/PGitHub/Spark/data/Employee.txt").javaRDD()
 				.flatMap(line -> {
 					String lines = line.toString();
 					String[] parts = lines.split(",");
