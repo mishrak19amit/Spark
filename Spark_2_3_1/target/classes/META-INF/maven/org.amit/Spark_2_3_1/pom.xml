@@ -71,5 +71,12 @@
 			<version>2.3.1</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-spark-20 -->
+		<dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch-spark-20_2.11</artifactId>
+			<version>6.5.4</version>
+		</dependency>
+
 	</dependencies>
 </project>

@@ -19,7 +19,7 @@ public class DataSetCassandraProductJoin {
 
 		Dataset<String> csql = ds.map(x -> {
 			return "UPDATE products.product_data_Temp  set created_on='" + x.getCreated_on() + "' where id_product='"
-					+ x.getId_product() + "'";
+					+ x.getId_product() + "';";
 		}, Encoders.STRING());
 
 		csql.show();
