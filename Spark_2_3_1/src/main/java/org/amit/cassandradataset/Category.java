@@ -6,12 +6,12 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 
-public class DataSetCassandraFetching {
+public class Category {
 
 	public static void main(String[] args) {
 		SparkConf conf = new SparkConf().set("spark.driver.memory", "4g").setAppName("CategoryDataSetCassandra")
 				.setMaster("local[10]");
-		conf.set("spark.cassandra.connection.host", "54.169.1.174");
+		conf.set("spark.cassandra.connection.host", "54.169.17.194");
 		conf.set("spark.cassandra.auth.username", "bagira");
 		conf.set("spark.cassandra.auth.password", "Welc0M@2dju9gl@");
 
@@ -46,9 +46,9 @@ public class DataSetCassandraFetching {
 //		
 
 		SQLContext sqlcontext = new SQLContext(jsc);
-		Dataset<Row> cassdf = sqlcontext.read().format("org.apache.spark.sql.cassandra").option("table", "product_data")
+		Dataset<Row> cassdf = sqlcontext.read().format("org.apache.spark.sql.cassandra").option("table", "category_details")
 				.option("keyspace", "products").load();
-		
+
 		cassdf.printSchema();
 		// System.out.println(cassdf.rdd().getNumPartitions());
 		cassdf.createOrReplaceTempView("QACassCat");
@@ -60,7 +60,7 @@ public class DataSetCassandraFetching {
 		// QACass group by attribute_name order by count(*) DESC");
 		//select id_product, count(*) as Count from QACassCat group by id_product
 		Dataset<Row> savecassdf = sqlcontext
-				.sql("select * from QACassCat");
+				.sql("select parents_hierarchy from QACassCat");
 
 		savecassdf.printSchema();
 
@@ -72,7 +72,7 @@ public class DataSetCassandraFetching {
 
 		// System.out.println(savecassdf.rdd().getNumPartitions());
 		savecassdf.show();
-		savecassdf.repartition(1).write().format("JSON").save("/home/moglix/Desktop/Amit/Data_Spark/Prod_Cass_Product");
+		savecassdf.repartition(1).write().format("JSON").save("/home/moglix/Desktop/Amit/Data_Spark/Prod_Cass_Cat");
 		jsc.close();
 	}
 }

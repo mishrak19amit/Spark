@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -187,14 +186,14 @@ public class KafkaStreaming {
 			return new Tuple2<Integer, String>(x._2(), x._1());
 		}).transformToPair(x -> x.sortByKey(false));
 
-		JavaPairDStream<String, String> top5Securities = sortedStockPerWindow.repartition(1).map(x -> x._2()+": Amount ("+x._1()+")").glom()
-				.mapToPair(x -> {
+		JavaPairDStream<String, String> top5Securities = sortedStockPerWindow.repartition(1)
+				.map(x -> x._2() + ": Amount (" + x._1() + ")").glom().mapToPair(x -> {
 
 					List<String> firstFive = IntStream.range(0, x.size()).filter(xx -> xx < 5).mapToObj(i -> x.get(i))
 							.collect(Collectors.toList());
 					String top5SecuritiesSymbol = "";
-					int i=0;
-					for (i=0;i<firstFive.size()-1;i++) {
+					int i = 0;
+					for (i = 0; i < firstFive.size() - 1; i++) {
 						top5SecuritiesSymbol = top5SecuritiesSymbol + firstFive.get(i) + ", ";
 					}
 					top5SecuritiesSymbol = top5SecuritiesSymbol + firstFive.get(i);

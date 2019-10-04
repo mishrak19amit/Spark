@@ -7,10 +7,10 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
-public class DataSetFromMysql {
+public class QABuyerMysql {
 	
 	public static void main(String[] args) {
-		SparkSession sc = SparkSession.builder().appName("Craete_Dataset_Myysql").master("local").getOrCreate();
+		SparkSession sc = SparkSession.builder().appName("CassProduct_Myysql").master("local[*]").getOrCreate();
 		
         Dataset<Row> payload = sc
                 .read()
@@ -24,19 +24,7 @@ public class DataSetFromMysql {
         
         Dataset<Row> updatedPayload=sc.sql("select id, uom from UOM");
         
-        Properties prop = new Properties();
-        		prop.setProperty("driver", "com.mysql.jdbc.Driver");
-        		prop.setProperty("user", "root");
-        		prop.setProperty("password", "moglix"); 
         
-        		String url = "jdbc:mysql://localhost:3306/uomdb";
-        				 
-        				//destination database table 
-        				String table = "sample_data";
-        				
-        				updatedPayload.write().mode(SaveMode.Append).jdbc(url, table, prop);
-        		
-        sc.sql("select * from UOM").show();
 
         
 		

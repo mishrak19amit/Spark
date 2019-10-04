@@ -23,6 +23,8 @@ public class DataSetCassandraProductJoin {
 		}, Encoders.STRING());
 
 		csql.show();
+		
+		//ds.write().format("").jdbc(url, table, connectionProperties);
 
 		csql.repartition(1).write().format("TEXT").save("/home/moglix/Desktop/Amit/Data_Spark/Prod_Cass_Product");
 
