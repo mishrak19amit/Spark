@@ -23,11 +23,7 @@ public class QABuyerMysql {
         payload.createOrReplaceTempView("UOM");
         
         Dataset<Row> updatedPayload=sc.sql("select id, uom from UOM");
-        
-        
-
-        
-		
+  	
 	}
 
 }
