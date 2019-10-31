@@ -1,11 +1,12 @@
 package org.amit.orderdataanalysis;
 
+
 import org.amit.orderanalysis.Util.OrderUtil;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-public class OrderDetailsItemAnalysis {
+public class OrderItemAnalysis {
 
 	public static void main(String[] args) {
 

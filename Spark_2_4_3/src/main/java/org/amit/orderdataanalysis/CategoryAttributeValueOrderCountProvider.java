@@ -24,7 +24,27 @@ public class CategoryAttributeValueOrderCountProvider {
 				"/home/moglix/orderDataAnalysis/orderProductDetails/MSNBrandCatAttributeOrderCount/MSNBrandCatAttributeOrderCount.json");
 
 		prodBrandCatAttributeOrderCount.show();
-		OrderUtil.saveCategoryBrandAttributeValueOrderCountDS(prodBrandCatAttributeOrderCount, "BrandCatAttributeValOrderCount");
+		
+		Dataset<Row> orderPreparedDS = addBrandAttributeCategoryName(prodBrandCatAttributeOrderCount, sc);
+		
+		OrderUtil.saveDSAsJson(orderPreparedDS, "BrandCatAttributeValOrderCount");
+	}
+
+	private static Dataset<Row> addBrandAttributeCategoryName(
+			Dataset<CategoryBrandAttributeValueOrderCount> prodBrandCatAttributeOrderCount, SparkSession sc) {
+		Dataset<Row> brandDetails=OrderUtil.getDatasetFromJSONFile("/home/moglix/orderDataAnalysis/ProdCassandraDataset/brand_details/brand_details.json", sc);
+		Dataset<Row> catDetails=OrderUtil.getDatasetFromJSONFile("/home/moglix/orderDataAnalysis/ProdCassandraDataset/category_details/category_details.json", sc);
+		Dataset<Row> attriDetails=OrderUtil.getDatasetFromJSONFile("/home/moglix/orderDataAnalysis/ProdCassandraDataset/attribute_details/attribute_details.json", sc);
+		brandDetails.createOrReplaceTempView("brand");
+		catDetails.createOrReplaceTempView("category");
+		attriDetails.createOrReplaceTempView("attribute");
+		prodBrandCatAttributeOrderCount.createOrReplaceTempView("MSNBCAO");
+		
+		Dataset<Row> orderPreparedDS= sc.sql("select attributeID, attribute_name, brandID, brand_name, categoryID, category_name, orderCount, value from MSNBCAO join attribute on attribute.id_attribute=MSNBCAO.attributeID join brand on brand.id_brand=MSNBCAO.brandID join category on category.category_code=MSNBCAO.categoryID");
+		
+		orderPreparedDS.show();
+		
+		return orderPreparedDS;
 	}
 
 	private static Dataset<CategoryBrandAttributeValueOrderCount> getDatasetFromFile(SparkSession sc, String filePath) {

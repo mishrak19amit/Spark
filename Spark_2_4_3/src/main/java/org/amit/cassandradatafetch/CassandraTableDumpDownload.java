@@ -19,7 +19,7 @@ public class CassandraTableDumpDownload {
 
 		SparkSession sc = SparkSession.builder().config(conf).getOrCreate();
 
-		Dataset<Row> cassdf = sc.read().format("org.apache.spark.sql.cassandra").option("table", "product_data")
+		Dataset<Row> cassdf = sc.read().format("org.apache.spark.sql.cassandra").option("table", "brand_details")
 				.option("keyspace", "products").load();
 
 		cassdf.printSchema();
@@ -28,7 +28,7 @@ public class CassandraTableDumpDownload {
 
 		Dataset<Row> savecassdf = sc.sql("select * from ProdCassProduct");
 
-		CassandraDatafetchUtil.saveDSAsJson(savecassdf, "ProdCassProduct");
+		CassandraDatafetchUtil.saveDSAsJson(savecassdf, "brand_details");
 		
 		sc.close();
 	}

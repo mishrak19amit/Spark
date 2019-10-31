@@ -1,4 +1,4 @@
-package org.amit.mysqldatafetch;
+package org.amit.mysql.read.write.dataset;
 
 import org.amit.orderanalysis.Util.OrderUtil;
 import org.apache.spark.sql.Dataset;
