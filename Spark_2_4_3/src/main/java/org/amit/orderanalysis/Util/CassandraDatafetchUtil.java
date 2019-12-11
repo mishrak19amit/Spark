@@ -40,5 +40,9 @@ public class CassandraDatafetchUtil {
 	public static void saveDSAsJson(Dataset<Row> dataset, String fileName) {
 		dataset.repartition(1).write().format("JSON").save("/home/moglix/orderDataAnalysis/ProdCassandraDataset/"+fileName);
 	}
+	
+	public static void saveDSAsCSV(Dataset<Row> dataset, String fileName) {
+		dataset.repartition(1).write().format("CSV").save("/home/moglix/orderDataAnalysis/productId_Only/"+fileName);
+	}
 
 }

@@ -1,8 +1,5 @@
 package org.amit.movierecommendation;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.recommendation.ALS;
